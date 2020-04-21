@@ -3,18 +3,19 @@ import simplejson as json # to install simplejson ---> pip install simplejson==3
 
 
 class ShelfLife:
-    def __init__( self,city,fruit,colour,ripness=1 ):  # Rr=30,firmness=55
+    def __init__( self,city,fruit,colour,ripness=1,defect=0 ):  # Rr=30,firmness=55
         self.shelflife=0
         self.ripness=ripness
         self.colour=colour
         self.city=city
         self.fruit=fruit
+        self.defect=defect
 
 
     def shelflife_claculator( self, past_shelf_days=0 ):
         self.findTemp()
 
-        x=(self.colour * self.std_firm(self.fruit,self.ripness) )/( self.std_res(self.fruit) * self.temp)
+        x=(self.colour * self.std_firm(self.fruit,self.ripness) )/( self.std_res(self.fruit) * self.temp * (self.defect+0.000001)) #adding 0.000001 to defect to avoid divide by zero error
         sl=0.004*(x**4) - 0.087*(x**3) + 0.679*(x**2) - 0.396*x + 0.839
         final_sl=sl - past_shelf_days
         if final_sl<=0:
@@ -94,7 +95,8 @@ class ShelfLife:
 
 
 
-a= ShelfLife("vadodara","Tomato",100) ## ShelfLife(city,fruit/veg name,color index,ripness)
+a= ShelfLife("vadodara","Tomato",100,1,0.5) ## ShelfLife(city,fruit/veg name,color index,ripness,defect) 
+                                            ## scale defect percentage(it must be a non-zero value) to a range of 0 to 1 before passing in the argunemt(by dividing it by 100). 
 a.shelflife_claculator()  # shelflife_calculator(past_shelf_life [ 0 by default])
 if a.getShelfLife()<0:
     print("Not edible !! Do not eat this !!")
